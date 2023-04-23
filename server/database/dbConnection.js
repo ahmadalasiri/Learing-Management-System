@@ -3,11 +3,11 @@ const mysql = require("mysql2/promise");
 const connection = async () => {
     try {
         const conn = await mysql.createConnection({
-            host: "localhost",
-            user: "root",
-            password: "",
-            database: "lms",
-            port: 3306,
+            host: process.env.DB_HOST,
+            user: process.env.DB_DBUSERNAME,
+            password: process.env.DB_PASSWORD,
+            database: process.env.DB_DBNAME,
+            port: process.env.DB_PORT,
         });
         console.log(`connected as id ${conn.threadId}`);
         return conn;
