@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcryptjs");
 
 const connection = require("../database/dbConnection");
 const ApiError = require("../utils/apiError");
@@ -135,7 +136,11 @@ exports.getUser = asyncHandler(async (req, res, next) => {
 exports.createUser = asyncHandler(async (req, res, next) => {
     const conn = await connection();
 
-    const { status, password, email, phone, type } = req.body;
+    const { status, email, phone, type } = req.body;
+    let { password } = req.body;
+
+    password = await bcrypt.hash(password, 5);
+
     const query = `INSERT INTO users (status, password, email, phone, type) VALUES ('${status}', '${password}', '${email}', '${phone}', '${type}')`;
 
     await conn.query(query);
@@ -151,7 +156,11 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
     const conn = await connection();
 
     const { id } = req.params;
-    const { status, password, email, phone } = req.body;
+    const { status, email, phone } = req.body;
+
+    let { password } = req.body;
+
+    password = await bcrypt.hash(password, 5);
 
     const query = `UPDATE users SET status = '${status}', password = '${password}', email = '${email}', phone = '${phone}' WHERE id = ${id}`;
     const [result] = await conn.query(query);
