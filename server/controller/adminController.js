@@ -152,16 +152,16 @@ exports.createUser = asyncHandler(async (req, res, next) => {
  *  @route       PUT /api/v1/admin/users/:id
  *  @access      Private/Admin
  */
+
 exports.updateUser = asyncHandler(async (req, res, next) => {
     const conn = await connection();
-
+    console.log("i am here...");
     const { id } = req.params;
     const { status, email, phone } = req.body;
 
     let { password } = req.body;
 
     password = await bcrypt.hash(password, 5);
-
     const query = `UPDATE users SET status = '${status}', password = '${password}', email = '${email}', phone = '${phone}' WHERE id = ${id}`;
     const [result] = await conn.query(query);
 

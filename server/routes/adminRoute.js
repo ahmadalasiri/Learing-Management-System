@@ -39,11 +39,7 @@ router
 
 // Users
 router.route("/users").get(getUsers).post(createUserValidator, createUser);
-router
-    .route("/users/:id")
-    .get(getUser)
-    .put(updateUserValidator, updateUser)
-    .delete(deleteUser);
+router.route("/users/:id").get(getUser).put(updateUser).delete(deleteUser);
 
 // Students
 router.route("/students").get(getStudents);

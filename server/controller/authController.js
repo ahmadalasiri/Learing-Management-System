@@ -64,7 +64,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
     ) {
         token = req.headers.authorization.split("  ")[1];
     }
-
     if (token === "null") {
         return next(
             new ApiError(
