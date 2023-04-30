@@ -25,7 +25,7 @@ exports.getAvailableCourses = asyncHandler(async (req, res, next) => {
  */
 
 exports.GetMyGrades = asyncHandler(async (req, res, next) => {
-    const { studentId } = req.body;
+    const studentId = req.user.id;
 
     // Get the connection object
     const conn = await connection();
@@ -54,7 +54,7 @@ exports.GetMyGrades = asyncHandler(async (req, res, next) => {
  */
 exports.registerCourse = asyncHandler(async (req, res, next) => {
     const { courseId } = req.params;
-    const { studentId } = req.body;
+    const studentId = req.user.id;
 
     // Get the connection object
     const conn = await connection();

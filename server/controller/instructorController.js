@@ -11,8 +11,7 @@ const ApiError = require("../utils/apiError");
 exports.getStudentEnrolledInCourse = asyncHandler(async (req, res, next) => {
     const conn = await connection();
     const { courseId } = req.params;
-    const { instructorId } = req.body;
-
+    const instructorId = req.user.id;
     // Check if the course exists
     let query = `SELECT * FROM courses WHERE id = ${courseId}`;
     const [courseRows] = await conn.query(query);
@@ -45,6 +44,31 @@ exports.getStudentEnrolledInCourse = asyncHandler(async (req, res, next) => {
     const [rows] = await conn.query(query);
     res.status(200).json({ result: rows.length, data: rows });
 });
+/**
+ *  @description Get the courses that the instructor teaches
+ *  @route       GET /api/v1/student/courses
+ *  @access      Private/instructor
+ */
+exports.getCourses = asyncHandler(async (req, res, next) => {
+    const conn = await connection();
+
+    const instructorId = req.user.id;
+
+    // Check if the student exist
+    query = `SELECT course_id FROM instructor_course WHERE instructor_id = ${instructorId}`;
+    const [rows] = await conn.query(query);
+
+    if (!rows[0]) {
+        return next(
+            new ApiError(
+                `No courses enrolled to this instructor with this id  ${instructorId}`,
+                404
+            )
+        );
+    }
+
+    res.status(200).json({ result: rows.length, data: rows });
+});
 
 /**
  *  @description Set Grades for students
@@ -55,8 +79,8 @@ exports.setGradesForStudent = asyncHandler(async (req, res, next) => {
     const conn = await connection();
 
     const { courseId, studentId } = req.params;
-    const { instructorId, grade } = req.body;
-
+    const { grade } = req.body;
+    const instructorId = req.user.id;
     // Check if the student exists
     let query = `SELECT * FROM users WHERE id = ${studentId} AND type = 'student'`;
     const [studentRows] = await conn.query(query);
@@ -74,13 +98,13 @@ exports.setGradesForStudent = asyncHandler(async (req, res, next) => {
         );
     }
 
-    // Check if the instructor exists
-    query = `SELECT * FROM users WHERE id = ${instructorId} AND type = 'instructor'`;
+    //  Check if the instructor teach this coures
+    query = `SELECT * FROM instructor_course WHERE instructor_id = ${instructorId} AND course_id = ${courseId}`;
     const [instructorRows] = await conn.query(query);
     if (!instructorRows[0]) {
         return next(
             new ApiError(
-                `There is no instructor with this id  ${instructorId}`,
+                `The instructor not teach this course with id ${courseId}`,
                 404
             )
         );
