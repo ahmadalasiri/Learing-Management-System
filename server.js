@@ -8,8 +8,7 @@ const helmet = require("helmet");
 dotenv.config({ path: "config.env" });
 const ApiError = require("./server/utils/apiError");
 const globalError = require("./server/middleware/errorMiddleware");
-// eslint-disable-next-line no-unused-vars
-const { connection } = require("./server/database/dbConnection");
+
 //  Routes
 const mountRoutes = require("./server/routes");
 

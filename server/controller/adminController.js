@@ -66,7 +66,27 @@ exports.updateCourse = asyncHandler(async (req, res, next) => {
     const { id } = req.params;
     const { name, code, status } = req.body;
 
-    const query = `UPDATE courses SET name = '${name}', code = '${code}', status = '${status}' WHERE id = ${id}`;
+    let query = `UPDATE courses SET`;
+    const fields = [];
+
+    if (name) {
+        fields.push(`name = '${name}'`);
+    }
+
+    if (code) {
+        fields.push(`code = '${code}'`);
+    }
+
+    if (status) {
+        fields.push(`status = '${status}'`);
+    }
+
+    if (fields.length === 0) {
+        return next(new ApiError(`No fields provided to update`, 400));
+    }
+
+    query += ` ${fields.join(", ")} WHERE id = ${id}`;
+
     const [result] = await conn.query(query);
 
     if (result.affectedRows === 0) {
@@ -147,6 +167,8 @@ exports.createUser = asyncHandler(async (req, res, next) => {
     res.status(201).json({ message: "user created successfully" });
 });
 
+//let query = `UPDATE users SET status = '${status}', password = '${password}', email = '${email}', phone = '${phone}' WHERE id = ${id}`;
+//    const queryx = `UPDATE courses SET name = '${name}', code = '${code}', status = '${status}' WHERE id = ${id}`;
 /**
  *  @description Update Course
  *  @route       PUT /api/v1/admin/users/:id
@@ -155,14 +177,39 @@ exports.createUser = asyncHandler(async (req, res, next) => {
 
 exports.updateUser = asyncHandler(async (req, res, next) => {
     const conn = await connection();
-    console.log("i am here...");
     const { id } = req.params;
     const { status, email, phone } = req.body;
 
     let { password } = req.body;
+    if (password) {
+        password = await bcrypt.hash(password, 5);
+    }
 
-    password = await bcrypt.hash(password, 5);
-    const query = `UPDATE users SET status = '${status}', password = '${password}', email = '${email}', phone = '${phone}' WHERE id = ${id}`;
+    let query = `UPDATE users SET`;
+    const fields = [];
+
+    if (status) {
+        fields.push(`status = '${status}'`);
+    }
+
+    if (password) {
+        fields.push(`password = '${password}'`);
+    }
+
+    if (email) {
+        fields.push(`email = '${email}'`);
+    }
+
+    if (phone) {
+        fields.push(`phone = '${phone}'`);
+    }
+
+    if (fields.length === 0) {
+        return next(new ApiError(`No fields provided to update`, 400));
+    }
+
+    query += ` ${fields.join(", ")} WHERE id = ${id}`;
+
     const [result] = await conn.query(query);
 
     if (result.affectedRows === 0) {
