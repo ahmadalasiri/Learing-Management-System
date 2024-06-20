@@ -11,11 +11,10 @@
 ## Installation
 1. Clone the repository: `git clone https://github.com/your-repo.git`
 2. Install dependencies: `npm install`
-3. Set up the database by importing the SQL dump file located at `database/dump.sql`.
-4. Configure the database connection in the `config/db.js` file.
 5. Start the server: `npm start`
 
 ## Usage
+
 ### Administrator
 - Access the admin routes by logging in as an admin user.
 - Manage courses: create, update, and delete courses.
